@@ -115,7 +115,7 @@ void AppClass::ProcessKeyboard(sf::Event a_event)
 		m_v3Color = glm::vec3(0.0f, 0.0f, 1.0f);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num0))
 		m_v3Color = glm::vec3(-1.0f, -1.0f, -1.0f);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) //E03 - Nathan Glick
 		m_useComp = !m_useComp;
 }
 void AppClass::Display(void)
@@ -127,10 +127,7 @@ void AppClass::Display(void)
 	GLuint SolidColor = glGetUniformLocation(m_uShaderProgramID, "SolidColor");
 	glUniform3f(SolidColor, m_v3Color.r, m_v3Color.g, m_v3Color.b);
 
-	GLuint Compliment = glGetUniformLocation(m_uShaderProgramID, "Compliment");
-	m_v3Comp = glm::vec3(1.0f - m_v3Color.r, 1.0f - m_v3Color.g, 1.0f - m_v3Color.b);
-	glUniform3f(Compliment, m_v3Comp.r, m_v3Comp.g, m_v3Comp.b);
-
+	//E03 - Nathan Glick
 	GLuint useComp = glGetUniformLocation(m_uShaderProgramID, "useComp");
 	glUniform1i(useComp, m_useComp);
 
