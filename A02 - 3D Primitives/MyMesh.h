@@ -211,6 +211,9 @@ public:
 	OUTPUT: ---
 	*/
 	void GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Color = C_WHITE);
+
+	vector3 NormalizeVec(vector3 a, vector3 b, float radius);
+
 #pragma endregion
 };
 

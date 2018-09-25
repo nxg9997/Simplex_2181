@@ -276,8 +276,21 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	//GenerateCube(a_fRadius * 2.0f, a_v3Color);
 	// -------------------------------
+	vector3 conePoint = vector3(0.0f, 0.0f, -a_fHeight);
+	vector3 prevP = vector3(a_fRadius, 0.0f, 0.0f);
+	for (size_t i = 0; i < a_nSubdivisions + 1; i++)
+	{
+		float posX = a_fRadius * cos((360 * i / a_nSubdivisions) * PI / 180);
+		float posY = a_fRadius * sin((360 * i / a_nSubdivisions) * PI / 180);
+
+		AddTri(vector3(0, 0, 0), prevP, vector3(posX, posY, 0));
+		AddTri(vector3(posX, posY, 0), prevP, conePoint);
+		prevP = vector3(posX, posY, 0);
+		
+	}
+
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -300,8 +313,28 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	//GenerateCube(a_fRadius * 2.0f, a_v3Color);
 	// -------------------------------
+	std::vector<vector3> pList;
+	vector3 prevP = vector3(a_fRadius, 0.0f, 0.0f);
+	pList.push_back(prevP);
+	for (size_t i = 0; i < a_nSubdivisions + 1; i++)
+	{
+		float posX = a_fRadius * cos((360 * i / a_nSubdivisions) * PI / 180);
+		float posY = a_fRadius * sin((360 * i / a_nSubdivisions) * PI / 180);
+
+		AddTri(vector3(0, 0, 0), prevP, vector3(posX, posY, 0));
+		prevP = vector3(posX, posY, 0);
+		pList.push_back(prevP);
+	}
+	for (size_t i = 1; i < pList.size(); i++)
+	{
+		vector3 p1 = vector3(pList[i].x, pList[i].y, -a_fHeight);
+		vector3 p2 = vector3(pList[i-1].x, pList[i-1].y, -a_fHeight);
+
+		AddQuad(p2, p1, pList[i - 1], pList[i]);
+		AddTri(vector3(0, 0, -a_fHeight), p1, p2);
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -330,8 +363,60 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
+	//GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
 	// -------------------------------
+
+	//inner cylinder
+	std::vector<vector3> pList;
+	vector3 prevP = vector3(a_fInnerRadius, 0.0f, 0.0f);
+	pList.push_back(prevP);
+	for (size_t i = 0; i < a_nSubdivisions + 1; i++)
+	{
+		float posX = a_fInnerRadius * cos((360 * i / a_nSubdivisions) * PI / 180);
+		float posY = a_fInnerRadius * sin((360 * i / a_nSubdivisions) * PI / 180);
+
+		//AddTri(vector3(0, 0, 0), prevP, vector3(posX, posY, 0));
+		prevP = vector3(posX, posY, 0);
+		pList.push_back(prevP);
+	}
+	for (size_t i = 1; i < pList.size(); i++)
+	{
+		vector3 p1 = vector3(pList[i].x, pList[i].y, -a_fHeight);
+		vector3 p2 = vector3(pList[i - 1].x, pList[i - 1].y, -a_fHeight);
+
+		AddQuad(p1, p2, pList[i], pList[i - 1]);
+		//AddTri(vector3(0, 0, -a_fHeight), p1, p2);
+	}
+
+	//outer cylinder
+	std::vector<vector3> pList2;
+	vector3 prevP2 = vector3(a_fOuterRadius, 0.0f, 0.0f);
+	pList2.push_back(prevP2);
+	for (size_t i = 0; i < a_nSubdivisions + 1; i++)
+	{
+		float posX = a_fOuterRadius * cos((360 * i / a_nSubdivisions) * PI / 180);
+		float posY = a_fOuterRadius * sin((360 * i / a_nSubdivisions) * PI / 180);
+
+		//AddTri(vector3(0, 0, 0), prevP2, vector3(posX, posY, 0));
+		prevP2 = vector3(posX, posY, 0);
+		pList2.push_back(prevP2);
+	}
+	for (size_t i = 1; i < pList2.size(); i++)
+	{
+		vector3 p1 = vector3(pList2[i].x, pList2[i].y, -a_fHeight);
+		vector3 p2 = vector3(pList2[i - 1].x, pList2[i - 1].y, -a_fHeight);
+
+		AddQuad(p2, p1, pList2[i - 1], pList2[i]);
+		//AddTri(vector3(0, 0, -a_fHeight), p1, p2);
+	}
+
+	//connect the cylinders
+	for (size_t i = 1; i < pList.size(); i++)
+	{
+		AddQuad(pList2[i - 1], pList2[i], pList[i - 1], pList[i]);
+		//vector3(pList2[i - 1].x, pList2[i - 1].y, -a_fHeight)
+		AddQuad(vector3(pList2[i].x, pList2[i].y, -a_fHeight), vector3(pList2[i - 1].x, pList2[i - 1].y, -a_fHeight), vector3(pList[i].x, pList[i].y, -a_fHeight), vector3(pList[i - 1].x, pList[i - 1].y, -a_fHeight));
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -380,17 +465,108 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		GenerateCube(a_fRadius * 2.0f, a_v3Color);
 		return;
 	}
-	if (a_nSubdivisions > 6)
-		a_nSubdivisions = 6;
+	if (a_nSubdivisions > 100)
+		a_nSubdivisions = 100;
 
 	Release();
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	//GenerateCube(a_fRadius * 2.0f, a_v3Color);
 	// -------------------------------
+	std::vector<std::vector<vector3>> ringList;
+	float theta = (2 * PI) / a_nSubdivisions;
+
+	for (size_t i = 0; i < a_nSubdivisions; i++)
+	{
+		std::vector<vector3> ring;
+		for (size_t k = 0; k < a_nSubdivisions; k++)
+		{
+			float posX = a_fRadius * cos(theta * k);
+			float posY = a_fRadius * sin(theta * k);
+
+			ring.push_back(NormalizeVec(vector3(0),vector3(posX, posY, a_fRadius), a_fRadius));
+		}
+		ringList.push_back(ring);
+	}
+	std::vector<vector3> centerRing;
+	for (size_t k = 0; k < a_nSubdivisions; k++)
+	{
+		float posX = a_fRadius * cos(theta * k);
+		float posY = a_fRadius * sin(theta * k);
+
+		centerRing.push_back(vector3(posX, posY, 0));
+	}
+	ringList.push_back(centerRing);
+	for (size_t i = 0; i < a_nSubdivisions; i++)
+	{
+		std::vector<vector3> ring;
+		for (size_t k = 0; k < a_nSubdivisions; k++)
+		{
+			float posX = a_fRadius * cos(theta * k);
+			float posY = a_fRadius * sin(theta * k);
+
+			ring.push_back(NormalizeVec(vector3(0), vector3(posX, posY, -a_fRadius), a_fRadius));
+		}
+		ringList.push_back(ring);
+	}
+
+	for (size_t i = 0; i < ringList.size() - 1; i++)
+	{
+		for (size_t j = 1; j < a_nSubdivisions; j++)
+		{
+			AddQuad(ringList[i + 1][j - 1], ringList[i + 1][j], ringList[i][j - 1], ringList[i][j]);
+			if (j == a_nSubdivisions - 1)
+			{
+				AddQuad(ringList[i + 1][j], ringList[i + 1][0], ringList[i][j], ringList[i][0]);
+			}
+		}
+	}
+
+	for (size_t i = 0; i < ringList[0].size() - 1; i++)
+	{
+		AddTri(ringList[0][i], ringList[0][i + 1], vector3(0, 0, a_fRadius));
+		if (i == ringList[0].size() - 2)
+		{
+			AddTri(ringList[0][i + 1], ringList[0][0], vector3(0, 0, a_fRadius));
+		}
+	}
+
+	for (size_t i = 0; i < ringList.back().size() - 1; i++)
+	{
+		AddTri(ringList.back()[i + 1], ringList.back()[i], vector3(0, 0, -a_fRadius));
+		if (i == ringList.back().size() - 2)
+		{
+			AddTri(ringList.back()[0], ringList.back()[i+1], vector3(0, 0, -a_fRadius));
+		}
+	}
+	
+	/*vector3 prevP = vector3(0.0f, 0.0f, 0.0f);
+	pList.push_back(prevP);
+	for (size_t i = 0; i < a_nSubdivisions+1; i++)
+	{
+		float posX = a_fRadius * cos((360 * i / a_nSubdivisions) * PI / 180);
+		float posY = a_fRadius * sin((360 * i / a_nSubdivisions) * PI / 180);
+
+		AddTri(vector3(0, 0, 0), prevP, vector3(posX, posY, 0));
+		prevP = vector3(posX, posY, 0);
+		pList.push_back(prevP);
+	}*/
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
+}
+
+vector3 MyMesh::NormalizeVec(vector3 a, vector3 b, float radius)
+{
+	float dx = b.x - a.x;
+	float dy = b.y - a.y;
+	float dz = b.z - a.z;
+	float dist = sqrt((pow(dx, 2)) + (pow(dy, 2)) + (pow(dz, 2)));
+	dx = dx * radius / dist;
+	dz = dz * radius / dist;
+	dy = dy * radius / dist;
+	vector3 result = vector3(a.x + dx, a.y + dy, a.z + dz);
+	return result;
 }

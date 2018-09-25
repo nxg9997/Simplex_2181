@@ -6,6 +6,7 @@ Date: 2017/05
 #define __MYMESH_H_
 
 #include "Definitions.h"
+#include <vector>
 
 class MyMesh
 {
@@ -19,6 +20,8 @@ class MyMesh
 	std::vector<vector3> m_lVertexCol;	//List of Colors
 
 	ShaderManager* m_pShaderMngr = nullptr;	//Shader Manager
+
+	vector3 NormalizeVec(vector3 a, vector3 b, float radius);
 
 public:
 	/*
