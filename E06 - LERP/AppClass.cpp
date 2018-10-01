@@ -52,14 +52,38 @@ void Application::Display(void)
 	fTimer += m_pSystem->GetDeltaTime(uClock); //get the delta time for that timer
 
 	//calculate the current position
-	vector3 v3CurrentPos;
+	vector3 v3CurrentPos = vector3(0.0f, 0.0f, 0.0f);
 	
 
-
-
+	
 
 	//your code goes here
-	v3CurrentPos = vector3(0.0f, 0.0f, 0.0f);
+	//v3CurrentPos = vector3(0.0f, 0.0f, 0.0f);
+	static int iCurrentIndex = 0;
+	static float timeInterval = 0.0f;
+	vector3 startPos = v3CurrentPos;
+	if (iCurrentIndex == m_stopsList.size())
+	{
+		startPos = m_stopsList.back();
+		iCurrentIndex = 0;
+	}
+	else if (iCurrentIndex != 0)
+	{
+		startPos = m_stopsList[iCurrentIndex - 1];
+	}
+	v3CurrentPos = glm::lerp(startPos, m_stopsList[iCurrentIndex], timeInterval);
+	float dist = glm::length(m_stopsList[iCurrentIndex]) - glm::length(v3CurrentPos);
+	std::cout << dist << " " << iCurrentIndex << std::endl;
+	timeInterval += 0.01f;
+	if (/*dist <= 1.2f && dist >= -1.2f*/timeInterval >= 1.0f)
+	{
+		iCurrentIndex++;
+		timeInterval = 0.0f;
+	}
+	/*if (iCurrentIndex >= m_stopsList.size())
+	{
+		iCurrentIndex = 0;
+	}*/
 	//-------------------
 	
 
