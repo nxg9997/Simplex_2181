@@ -21,6 +21,10 @@ class Application
 	uint m_uOrbits = 0; //number of shapes starting at 3 and increasing in sides
 	std::vector<uint> m_shapeList; //shape index for circles
 	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+
+	std::vector<std::vector<vector3>> pathList; //holds points on each orbit path to lerp to
+	std::vector<float> timeList; //holds current timeStep for each orbit path
+	std::vector<int> currStopList; //holds current point index for each path
 	
 private:
 	static ImGuiObject gui; //GUI object
