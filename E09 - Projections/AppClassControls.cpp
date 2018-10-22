@@ -91,14 +91,18 @@ void Application::ProcessKeyReleased(sf::Event a_event)
 		break;
 	case sf::Keyboard::F1:
 		m_pCameraMngr->SetCameraMode(CAM_PERSP);
+		m_pCamera->SetPerspective(true);
 		break;
 	case sf::Keyboard::F2:
 		m_pCameraMngr->SetCameraMode(CAM_ORTHO_Z);
+		m_pCamera->SetPerspective(false);
 		break;
 	case sf::Keyboard::F3:
+		m_pCamera->SetPerspective(false);
 		m_pCameraMngr->SetCameraMode(CAM_ORTHO_Y);
 		break;
 	case sf::Keyboard::F4:
+		m_pCamera->SetPerspective(false);
 		m_pCameraMngr->SetCameraMode(CAM_ORTHO_X);
 		break;
 	case sf::Keyboard::F:
@@ -435,6 +439,16 @@ void Application::ProcessKeyboard(void)
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 		m_pCameraMngr->MoveVertical(fSpeed);
+
+	/*Nate's code
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::F1))
+		m_pCamera->SetPerspective(true); 
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::F2))
+		m_pCamera->SetPerspective(false);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::F3))
+		m_pCamera->SetPerspective(false);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::F4))
+		m_pCamera->SetPerspective(false);*/
 #pragma endregion
 }
 //Joystick
