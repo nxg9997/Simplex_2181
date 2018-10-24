@@ -132,7 +132,12 @@ void Simplex::MyCamera::SetPositionTargetAndUpward(vector3 a_v3Position, vector3
 void Simplex::MyCamera::CalculateViewMatrix(void)
 {
 	//Calculate the look at most of your assignment will be reflected in this method
-	m_m4View = glm::lookAt(m_v3Position, m_v3Target, glm::normalize(m_v3Above - m_v3Position)); //position, target, upward
+
+	//calculate the forward, right, and up vectors for the camera
+	CalcForward();
+	CalcRight();
+	CalcUp();
+	m_m4View = glm::lookAt(m_v3Position, m_v3Position+m_v3Forward, m_v3Up) * ToMatrix4(m_qRotation); //position, target, upward
 }
 
 void Simplex::MyCamera::CalculateProjectionMatrix(void)
@@ -152,11 +157,57 @@ void Simplex::MyCamera::CalculateProjectionMatrix(void)
 
 void MyCamera::MoveForward(float a_fDistance)
 {
-	//The following is just an example and does not take in account the forward vector (AKA view vector)
-	m_v3Position += vector3(0.0f, 0.0f,-a_fDistance);
-	m_v3Target += vector3(0.0f, 0.0f, -a_fDistance);
-	m_v3Above += vector3(0.0f, 0.0f, -a_fDistance);
+	m_v3Position +=  m_v3Forward * a_fDistance;
+	//m_v3Target += m_v3Forward * a_fDistance;
+	//m_v3Above += m_v3Forward * a_fDistance;
 }
 
-void MyCamera::MoveVertical(float a_fDistance){}//Needs to be defined
-void MyCamera::MoveSideways(float a_fDistance){}//Needs to be defined
+void MyCamera::MoveVertical(float a_fDistance)
+{
+	m_v3Position += vector3(0.0f, a_fDistance, 0.0f);
+	m_v3Target += vector3(0.0f, a_fDistance, 0.0f);
+	m_v3Above += vector3(0.0f, a_fDistance, 0.0f);
+}//Needs to be defined
+void MyCamera::MoveSideways(float a_fDistance)
+{
+	m_v3Position += m_v3Right * a_fDistance;
+	//m_v3Target += m_v3Right * a_fDistance;
+	//m_v3Above += m_v3Right * a_fDistance;
+}
+
+
+//added functions for rotating camera
+void Simplex::MyCamera::ChangeYaw(float a_fAngle)//X
+{
+	m_fVertAngle = a_fAngle;
+	m_qRotation *= glm::angleAxis(-a_fAngle, m_v3Right);
+}
+void Simplex::MyCamera::ChangePitch(float a_fAngle)//Y
+{
+	m_fHorAngle = a_fAngle;
+	m_qRotation *= glm::angleAxis(a_fAngle, m_v3Up);
+
+}
+
+//determine where the camera is facing
+void Simplex::MyCamera::CalcForward()
+{
+	m_v3Forward = vector3(cos(m_fVertAngle) * sin(m_fHorAngle),
+		sin(m_fVertAngle), 
+		cos(m_fVertAngle) * cos(m_fHorAngle));
+}
+
+//determine the right vector
+void Simplex::MyCamera::CalcRight()
+{
+	m_v3Right = vector3(
+		sin(m_fHorAngle - 3.14f/2.0f),
+		0, 
+		cos(m_fHorAngle - 3.14f / 2.0f));
+}
+
+//determine the up vector
+void Simplex::MyCamera::CalcUp()
+{
+	m_v3Up = glm::cross(m_v3Right, m_v3Forward);
+}

@@ -12,8 +12,20 @@ namespace Simplex
 
 class MyCamera
 {
-	vector3 m_v3Position = vector3(0.0f, 0.0f, 10.0f); //Where my camera is located
-	vector3 m_v3Target = vector3(0.0f, 0.0f, 0.0f); //What I'm looking at
+	quaternion m_qRotation = glm::angleAxis(0.0f, AXIS_Z); //camera rotation
+	quaternion m_qRotationOpp = glm::angleAxis(0.0f, AXIS_Z); //camera rotation
+
+	//store the angles outside of the quaternion for rotation
+	float m_fVertAngle = 0.0f;
+	float m_fHorAngle = 0.0f;
+
+	vector3 m_v3Forward = vector3(0.0f); //forward vector for the camera
+	vector3 m_v3Right = vector3(0.0f); //right vector for the camera
+	vector3 m_v3Up = vector3(0.0f); //up vector for the camera
+
+
+	vector3 m_v3Position = vector3(0.0f, 0.0f, 0.0f); //Where my camera is located
+	vector3 m_v3Target = m_v3Position + m_v3Forward; //What I'm looking at
 	vector3 m_v3Above = vector3(0.0f, 1.0f, 0.0f); //What is above the camera
 
 	bool m_bPerspective = true; //perspective view? False is Orthographic
@@ -28,6 +40,8 @@ class MyCamera
 
 	matrix4 m_m4View; //View matrix
 	matrix4 m_m4Projection; //Projection Matrix
+
+	
 public:
 	/*
 	USAGE: Constructor
@@ -230,6 +244,14 @@ public:
 	OUTPUT: ---
 	*/
 	void MoveSideways(float a_fDistance = 0.1f);
+
+	void ChangeYaw(float a_fAngle);
+
+	void ChangePitch(float a_fAngle);
+
+	void CalcForward();
+	void CalcRight();
+	void CalcUp();
 };
 
 } //namespace Simplex
