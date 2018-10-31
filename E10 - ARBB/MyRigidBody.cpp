@@ -85,8 +85,47 @@ void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix)
 	m_m4ToWorld = a_m4ModelMatrix;
 	
 	//your code goes here---------------------
-	m_v3MinG = m_v3MinL;
-	m_v3MaxG = m_v3MaxL;
+	/*m_v3MinG = m_v3MinL;
+	m_v3MaxG = m_v3MaxL;*/
+
+	//create all vertices for box and store in v3List
+	std::vector<vector3> v3List;
+
+	v3List.push_back(vector3(m_m4ToWorld * vector4(m_v3MinL.x, m_v3MinL.y, m_v3MinL.z, 1.0f)));
+	v3List.push_back(vector3(m_m4ToWorld * vector4(m_v3MaxL.x, m_v3MinL.y, m_v3MinL.z,1.0f)));
+	v3List.push_back(vector3(m_m4ToWorld * vector4(m_v3MinL.x, m_v3MaxL.y, m_v3MinL.z,1.0f)));
+	v3List.push_back(vector3(m_m4ToWorld * vector4(m_v3MaxL.x, m_v3MaxL.y, m_v3MinL.z,1.0f)));
+
+	v3List.push_back(vector3(m_m4ToWorld * vector4(m_v3MinL.x, m_v3MinL.y, m_v3MaxL.z,1.0f)));
+	v3List.push_back(vector3(m_m4ToWorld * vector4(m_v3MaxL.x, m_v3MinL.y, m_v3MaxL.z,1.0f)));
+	v3List.push_back(vector3(m_m4ToWorld * vector4(m_v3MinL.x, m_v3MaxL.y, m_v3MaxL.z,1.0f)));
+	v3List.push_back(vector3(m_m4ToWorld * vector4(m_v3MaxL.x, m_v3MaxL.y, m_v3MaxL.z, 1.0f)));
+
+	//set default min and max
+	m_v3MaxG = v3List[0];
+	m_v3MinG = v3List[0];
+
+	//check for actual min and max
+	for (int i = 1; i < v3List.size(); ++i)
+	{
+		if (m_v3MaxG.x < v3List[i].x)
+			m_v3MaxG.x = v3List[i].x;
+
+		else if (m_v3MinG.x > v3List[i].x)
+			m_v3MinG.x = v3List[i].x;
+
+		if (m_v3MaxG.y < v3List[i].y)
+			m_v3MaxG.y = v3List[i].y;
+
+		else if (m_v3MinG.y > v3List[i].y)
+			m_v3MinG.y = v3List[i].y;
+
+		if (m_v3MaxG.z < v3List[i].z)
+			m_v3MaxG.z = v3List[i].z;
+
+		else if (m_v3MinG.z > v3List[i].z)
+			m_v3MinG.z = v3List[i].z;
+	}
 	//----------------------------------------
 
 	//we calculate the distance between min and max vectors
