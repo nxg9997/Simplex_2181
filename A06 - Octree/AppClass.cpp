@@ -29,8 +29,10 @@ void Application::InitVariables(void)
 			m_pEntityMngr->SetModelMatrix(m4Position);
 		}
 	}
-	m_uOctantLevels = 1;
+	m_uOctantLevels = 3;
 	m_pEntityMngr->Update();
+	m_pRoot = new MyOctree(m_uOctantLevels, 5); //getentitycount read access violation???
+
 }
 void Application::Update(void)
 {
@@ -46,11 +48,16 @@ void Application::Update(void)
 	//Update Entity Manager
 	m_pEntityMngr->Update();
 
+	m_pRoot->Display(m_uOctantID, C_YELLOW);
+
 	//Add objects to render list
 	m_pEntityMngr->AddEntityToRenderList(-1, true);
+
+
 }
 void Application::Display(void)
 {
+
 	// Clear the screen
 	ClearScreen();
 
@@ -76,4 +83,6 @@ void Application::Release(void)
 {
 	//release GUI
 	ShutdownGUI();
+
+	SafeDelete(m_pRoot);
 }
